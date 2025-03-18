@@ -249,9 +249,9 @@ def main():
 
             print("Results found. Shutting down service...")  # Fail health checks
             health_check_server.shutdown()  # Stop HTTP server
-            sys.exit(0)  # Exit completely
+            break
         else:
-            print(f"Exam Checker says : {message}")
+            print(f"[!!!] Exam Checker says : {message}")
             print(f"Checking again at {CHECK_INTERVAL//60} minutes ...")
             time.sleep(CHECK_INTERVAL)
 
