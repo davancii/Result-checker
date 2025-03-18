@@ -246,9 +246,6 @@ def main():
             """
             
             send_email(EMAIL_TO, email_subject, email_body, GMAIL_USER, GMAIL_PASS)
-
-            print("Results found. Shutting down service...")  # Fail health checks
-            sys.exit(0)  # Exit completely
         else:
             print(f"Exam Checker says : {message}")
             print(f"Checking again at {CHECK_INTERVAL//60} minutes ...")
