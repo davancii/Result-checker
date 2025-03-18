@@ -190,19 +190,12 @@ def send_email(to_email, subject, body, gmail_user, gmail_pass):
 
 # code for the script to work as a web service
 
-service_active = True
-
 class HealthCheckHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        global service_active
-        if service_active:
-            self.send_response(200)
-            self.send_header('Content-type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(b'OK')
-        else:
-            self.send_response(503)
-            self.end_headers()
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(b'OK')
 
 def run_health_check():
     server = HTTPServer(('0.0.0.0', 8000), HealthCheckHandler)
@@ -254,9 +247,7 @@ def main():
             
             send_email(EMAIL_TO, email_subject, email_body, GMAIL_USER, GMAIL_PASS)
 
-            print("Results found. Shutting down service...")
-            global service_active
-            service_active = False  # Fail health checks
+            print("Results found. Shutting down service...")  # Fail health checks
             health_check_server.shutdown()  # Stop HTTP server
             sys.exit(0)  # Exit completely
         else:
