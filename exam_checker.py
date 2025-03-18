@@ -88,7 +88,7 @@ def get_all_groups(session, url, headers, csrf_token, faculty_id):
             
         return groups
     except Exception as e:
-        print(f"خطأ في جلب المجموعات: {str(e)}")
+        print(f"Error in fetching groups: {str(e)}")
         print(f"Response content: {response.text}")  # Print response content on error
         return []
 
@@ -119,11 +119,11 @@ def check_exam_results(student_id, faculty_id):
         
         # Get all available groups
         groups = get_all_groups(session, url, headers, csrf_token, faculty_id)
-        print(f"تم العثور على {len(groups)} مجموعة")
+        print(f"Found {len(groups)} Groups")
         
         # Try each group
         for group in groups:
-            print(f"\nجاري التحقق من المجموعة: {group['name']} (ID: {group['id']})")
+            print(f"\nChecking group: {group['name']} (ID: {group['id']})")
             
             data = {
                 '_token': csrf_token,
@@ -155,7 +155,7 @@ def check_exam_results(student_id, faculty_id):
                     json_response.get('student_name') == student_id or 
                     json_response.get('student_number') == student_id
                 ):
-                    print(f"تم العثور على النتائج في المجموعة: {group['name']}")
+                    print(f"Exam results found at group : {group['name']}")
                     formatted_results = format_results(json_response, group['name'])
                     return True, formatted_results, group['name']
                     
@@ -170,24 +170,10 @@ def check_exam_results(student_id, faculty_id):
             # Small delay between requests to avoid overwhelming the server
             time.sleep(1)
             
-        return False, "النتيجة غير متاحة حالياً في أي مجموعة", None
+        return False, "Exam results not found in any group", None
 
     except Exception as e:
-        return False, f"حدث خطأ: {str(e)}", None
-
-def save_results_to_file(student_id, results):
-    # Create results directory if it doesn't exist
-    if not os.path.exists('results'):
-        os.makedirs('results')
-        
-    # Create filename with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"results/{student_id}_{timestamp}.txt"
-    
-    with open(filename, 'w', encoding='utf-8') as f:
-        f.write(results)
-    
-    return filename
+        return False, f"Error !! : {str(e)}", None
 
 def send_email(to_email, subject, body, gmail_user, gmail_pass):
     try:
@@ -206,10 +192,10 @@ def send_email(to_email, subject, body, gmail_user, gmail_pass):
         server.send_message(msg)
         server.quit()
         
-        print("تم إرسال البريد الإلكتروني بنجاح")
+        print("E-mail sent successfully ...")
         return True
     except Exception as e:
-        print(f"خطأ في إرسال البريد الإلكتروني: {str(e)}")
+        print(f"Error sending E-mail: {str(e)}")
         return False
 
 def main():
@@ -225,12 +211,12 @@ def main():
     # Check interval in seconds (2.5 hours)
     CHECK_INTERVAL = 9000
     
-    print("بدء فحص نتائج الامتحانات...")
+    print("Start checking Exam results ...")
     results_found = False
     
     while not results_found:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"\nجاري فحص النتائج في {current_time}")
+        print(f"\nChecking results at {current_time}")
         
         results_found, message, group_name = check_exam_results(STUDENT_ID, FACULTY_ID)
         
@@ -239,9 +225,6 @@ def main():
             print(message)
             print("═"*50 + "\n")
             
-            # Save results to file
-            filename = save_results_to_file(STUDENT_ID, message)
-            print(f"تم حفظ النتائج في الملف: {filename}")
             
             # Send email notification with results
             email_subject = f"نتائج الامتحانات متاحة - {group_name}"
@@ -251,17 +234,12 @@ def main():
             
             {message}
             
-            تم حفظ النتائج في ملف: {filename}
             """
             
             send_email(EMAIL_TO, email_subject, email_body, GMAIL_USER, GMAIL_PASS)
-            
-            # Send system notification
-            notification_msg = f"نتائج الامتحانات متاحة الآن في مجموعة {group_name}!"
-            send_notification("تنبيه نتائج الامتحانات", notification_msg)
         else:
-            print(f"الرسالة: {message}")
-            print(f"سيتم إعادة الفحص بعد {CHECK_INTERVAL//60} دقائق...")
+            print(f"Exam Checker says : {message}")
+            print(f"Checking again at {CHECK_INTERVAL//60} minutes ...")
             time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
