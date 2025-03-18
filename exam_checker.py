@@ -21,7 +21,6 @@ def format_results(json_response, group_name=None):
     الكلية: {json_response.get('faculty')}
     البرنامج: {json_response.get('program')}
     الفرقة: {json_response.get('group')}
-    المجموعة: {group_name}
     نوع الدراسة: {json_response.get('study_type')}
     الفصل الدراسي: {json_response.get('semester')}
 
