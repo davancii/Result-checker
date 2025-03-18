@@ -12,19 +12,6 @@ import json
 
 load_dotenv()
 
-# Function to send notification
-def send_notification(title, message):
-    system = platform.system()
-    
-    if system == "Windows":
-        from win10toast import ToastNotifier
-        toaster = ToastNotifier()
-        toaster.show_toast(title, message, duration=10)
-    elif system == "Darwin":  # macOS
-        os.system(f"""osascript -e 'display notification "{message}" with title "{title}"'""")
-    elif system == "Linux":
-        os.system(f"""notify-send "{title}" "{message}" """)
-
 def format_results(json_response, group_name=None):
     details = f"""
     معلومات الطالب:
