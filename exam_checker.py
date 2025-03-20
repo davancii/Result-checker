@@ -246,6 +246,7 @@ def main():
             """
             
             send_email(EMAIL_TO, email_subject, email_body, GMAIL_USER, GMAIL_PASS)
+            break
         else:
             print(f"Exam Checker says : {message}")
             print(f"Checking again at {CHECK_INTERVAL//60} minutes ...")
